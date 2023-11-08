@@ -3,9 +3,9 @@ const password = document.getElementById('password')
 const form = document.querySelector('form')
 console.log('hola mundo')
 
-form.addEventListener('submit',(event)=>{
+form.addEventListener('submit',async (event)=>{
     event.preventDefault()
-    fetch('http://localhost:3000/auth/login',{
+    const data = await fetch('http://localhost:3000/auth/login',{
         method:'POST',
         headers:{
             'Content-Type':'application/json'
@@ -14,10 +14,9 @@ form.addEventListener('submit',(event)=>{
             email:email.value,
             password:password.value
         })
-    }).then((data)=>{
-        console.log('data',document.cookie)
-        //window.location.href= "http://localhost:3000/profile"
-    }).catch((error)=>{
-        console.error('error-login',error)
     })
+    const user = await data.json()
+    document.cookie = 'userId='+user._id
+    window.location.href = 'http://localhost:3000/profile'
+    console.log('user',user)
 })

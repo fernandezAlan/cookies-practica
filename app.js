@@ -39,10 +39,10 @@ app.post('/auth/login',async (req,res)=>{
         const password = req.body.password
         const user = await User.findOne({email:email})
         if(user && user.password === password){
-            const userId = JSON.stringify(user._id)
-            console.log('userId',userId)
-            res.cookie('UserId',userId)
-            res.status(200).send('OK')
+            //const userId = JSON.stringify(user._id)
+            //console.log('userId',userId)
+            //res.cookie('userId',userId)
+            res.status(200).json(user)
         }
     }catch(error){
         res.status(400).end()
