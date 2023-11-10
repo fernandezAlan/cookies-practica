@@ -6,6 +6,7 @@ const User = require('./models/user')
 const mongoose = require('mongoose')
 const path = require('path')
 const cookieParser = require('cookie-parser')
+const encrypt = require('./utils/auth')
 
 //midlewares
 app.use(cookieParser())
@@ -31,14 +32,27 @@ app.get('/profile',async (req,res)=>{
 app.get('/login',(req,res)=>{
     res.render('pages/login')
 })
+app.post('/auth/register',async (req,res)=>{
+    const password = req.body.password
+    const hashedPassword = encrypt.encryptPassword(password)
+    const user = await User.create({
+        name:req.body.name,
+        email:req.body.email,
+        password:hashedPassword.hash,
+        salt: hashedPassword.salt
+    })
+    res.status(201).json(user)
 
+})
 app.post('/auth/login',async (req,res)=>{
     try{
-        console.log('body:',req.body)
+      
         const email = req.body.email
         const password = req.body.password
         const user = await User.findOne({email:email})
-        if(user && user.password === password){
+       
+        const passwordsMatch = encrypt.comparePasswords(password,user.password,user.salt)
+        if(user && passwordsMatch){
             //const userId = JSON.stringify(user._id)
             //console.log('userId',userId)
             //res.cookie('userId',userId)
